@@ -1,0 +1,34 @@
+import cv2 
+import mediapipe as mp
+import time 
+
+cap=cv2.VideoCapture("C:\\Users\\asus\\Downloads\\random_video.mp4")
+mpdraw=mp.solutions.drawing_utils
+ctime=0
+ptime=0
+mppose=mp.solutions.pose
+pose=mppose.Pose()
+while True:
+    success,img=cap.read()
+    imgrgb=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    results=pose.process(imgrgb)
+    if results.pose_landmarks:
+        mpdraw.draw_landmarks(img,results.pose_landmarks,mppose.POSE_CONNECTIONS)
+        for ids,lm in enumerate(results.pose_landmarks.landmark):
+            h,w,c=img.shape
+            cx,cy=int(lm.x*w),int(lm.y*h)
+            print((ids,cx,cy))
+            cv2.circle(img,(cx,cy),5,(0,250,255),cv2.FILLED)
+               
+ 
+
+
+    ctime=time.time()
+    fps=1/(ctime-ptime)
+    ptime=ctime
+    cv2.putText(img,str(int(fps)),(10,111),cv2.FONT_HERSHEY_PLAIN,3.,(255,0,244),3)    
+        
+        
+        
+    cv2.waitKey(1)
+    cv2.imshow("Image",img)    
